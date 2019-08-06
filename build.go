@@ -150,7 +150,7 @@ func fetchTor(outdir, dldir, target string) (string, error) {
 				if err != nil {
 					continue
 				}
-				b = bytes.ReplaceAll(b, []byte("./TorBrowser/Tor/"), []byte("./"))
+				b = bytes.Replace(b, []byte("./TorBrowser/Tor/"), []byte("./"), -1)
 				err = ioutil.WriteFile(file, b, os.ModePerm)
 				if err != nil {
 					return "", err
