@@ -8,6 +8,12 @@ checkdep:
 	go-bindata -version
 	7z i
 
+dep:
+	go get -u github.com/PuerkitoBio/goquery
+	go get -u github.com/mholt/archiver
+	go get -u github.com/cretz/bine
+	go get -u github.com/jteeuwen/go-bindata/...
+
 l:
 	go run build.go -target linux
 
