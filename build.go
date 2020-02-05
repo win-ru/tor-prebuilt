@@ -42,18 +42,26 @@ func mmain() error {
 		os.MkdirAll(dldir, os.ModePerm)
 		os.MkdirAll(outdir, os.ModePerm)
 	}
-	pkgDir, err := fetchTor(outdir, dldir, target)
+	distDir, err := fetchTor(outdir, dldir, target)
 	if err != nil {
 		return err
 	}
-	return genBinData(pkgDir, target)
+	pkgName, err := genBinData(distDir, target)
+	if err != nil {
+		return err
+	}
+	pkgDir := filepath.Join("embedded", pkgName)
+	latest := filepath.Join("embedded", "tor_latest")
+	os.RemoveAll(latest)
+	os.MkdirAll(latest, os.ModePerm)
+	return copyRecursive(latest, pkgDir)
 }
 
-func genBinData(pkgDir, target string) error {
+func genBinData(distDir, target string) (string, error) {
 
-	ver := versionR.FindString(pkgDir)
+	ver := versionR.FindString(distDir)
 	if ver == "" {
-		return fmt.Errorf("version not found in pacage directory %q for target=%q", pkgDir, target)
+		return "", fmt.Errorf("version not found in package directory %q for target=%q", distDir, target)
 	}
 
 	pkgName := "tor_" + strings.Replace(ver, ".", "_", -1)
@@ -62,11 +70,13 @@ func genBinData(pkgDir, target string) error {
 	assets := filepath.Join("embedded", pkgName, target+".go")
 	log.Println("generating assets ", assets)
 
-	cmd := exec.Command("go-bindata", "-nomemcopy", "-pkg", pkgName, "-prefix", pkgDir, "-tags", target, "-o", assets, pkgDir)
+	cmd := exec.Command("go-bindata", "-nomemcopy", "-pkg", pkgName, "-prefix", distDir, "-tags", target, "-o", assets, distDir)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	return cmd.Run()
+	return pkgName, cmd.Run()
 }
+
+var urlBase = "https://www.torproject.org"
 
 func fetchTor(outdir, dldir, target string) (string, error) {
 
@@ -74,7 +84,7 @@ func fetchTor(outdir, dldir, target string) (string, error) {
 
 		var body bytes.Buffer
 		{
-			res, err := http.Get("https://www.torproject.org/download/")
+			res, err := http.Get(urlBase + "/download/")
 			if err != nil {
 				return "", err
 			}
@@ -102,6 +112,9 @@ func fetchTor(outdir, dldir, target string) (string, error) {
 		}
 		if archiveURL == "" {
 			return "", fmt.Errorf("download link not found for target=%q", target)
+		}
+		if !strings.HasPrefix(archiveURL, "http://") && !strings.HasPrefix(archiveURL, "https://") {
+			archiveURL = urlBase + archiveURL
 		}
 		log.Println("proceeding with ", archiveURL)
 
@@ -224,7 +237,7 @@ func fetchTor(outdir, dldir, target string) (string, error) {
 	if target == windows {
 		var body bytes.Buffer
 		{
-			res, err := http.Get("https://www.torproject.org/download/tor/")
+			res, err := http.Get(urlBase + "/download/tor/")
 			if err != nil {
 				return "", err
 			}
@@ -250,6 +263,9 @@ func fetchTor(outdir, dldir, target string) (string, error) {
 		}
 		if archiveURL == "" {
 			return "", fmt.Errorf("download link not found for target=%q", target)
+		}
+		if !strings.HasPrefix(archiveURL, "http://") && !strings.HasPrefix(archiveURL, "https://") {
+			archiveURL = urlBase + archiveURL
 		}
 		log.Println("proceeding with ", archiveURL)
 

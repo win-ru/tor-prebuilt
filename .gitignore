@@ -1,3 +1,4 @@
 out/
 .download/
 /embedded/tor_*
+!/embedded/tor_latest

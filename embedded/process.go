@@ -11,7 +11,7 @@ import (
 	"runtime"
 	"strings"
 
-	tor "github.com/clementauger/tor-prebuilt/embedded/tor_8_5_4"
+	tor "github.com/clementauger/tor-prebuilt/embedded/tor_latest"
 	"github.com/cretz/bine/process"
 )
 
