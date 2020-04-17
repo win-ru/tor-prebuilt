@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
@@ -14,11 +15,13 @@ import (
 func main() {
 	// Start tor with default config (can set start conf's DebugWriter to os.Stdout for debug logs)
 	fmt.Println("Starting and registering onion service, please wait a couple of minutes...")
+	d, _ := ioutil.TempDir("", "data-dir")
 	conf := &tor.StartConf{
 		ProcessCreator: embedded.NewCreator(),
 		// prebuilt always provide a torrc-defaults along with it and set the wd to the tor exe directory.
 		// use an absolute file path to load an alternative configuration file.
 		TorrcFile: "torrc-defaults",
+		DataDir:   d,
 	}
 	t, err := tor.Start(nil, conf)
 	if err != nil {
@@ -31,7 +34,8 @@ func main() {
 	// Create a v3 onion service to listen on any port but show as 80
 	onion, err := t.Listen(listenCtx, &tor.ListenConf{Version3: true, RemotePorts: []int{80}})
 	if err != nil {
-		log.Panicf("Unable to create onion service: %v", err)
+		log.Printf("Unable to create onion service: %v", err)
+		return
 	}
 	defer onion.Close()
 	fmt.Printf("Open Tor browser and navigate to http://%v.onion\n", onion.ID)
@@ -45,6 +49,6 @@ func main() {
 		errCh <- nil
 	}()
 	if err = <-errCh; err != nil {
-		log.Panicf("Failed serving: %v", err)
+		log.Printf("Failed serving: %v", err)
 	}
 }

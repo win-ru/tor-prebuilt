@@ -15,6 +15,7 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/clementauger/tor-prebuilt/embedded"
 	"github.com/mholt/archiver"
 )
 
@@ -312,11 +313,7 @@ func fetchTor(outdir, dldir, target string) (string, error) {
 		{
 			torrc := filepath.Join(pkgOutDir, "torrc-defaults")
 			if _, err := os.Stat(torrc); os.IsNotExist(err) {
-				data := []byte(`
-AvoidDiskWrites 1
-Log notice stdout
-CookieAuthentication 1
-DormantCanceledByStartup 1`)
+				data := []byte(embedded.TorRCDefaults)
 				if err := ioutil.WriteFile(torrc, data, os.ModePerm); err != nil {
 					return "", err
 				}
