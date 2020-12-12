@@ -4,7 +4,7 @@ embed tor daemon within your programs.
 
 It builds an embedded copy of the tor daemon from the TBB archives available from the official website.
 
-The api is compatible with github.com/cretz/bine
+The api is compatible with [github.com/cretz/bine](https://github.com/cretz/bine)
 
 # Usage
 
@@ -55,6 +55,30 @@ func main() {
 }
 ```
 
+# What for ?
+
+Benefits of the tor network to host your application at home and make it accessible to anyone in a glance.
+
+# Why ?
+
+Because the other alternative, i am aware of, to include tor connectivity to a go program, requires
+a more complex and much harder to maintain build chain.
+
+The method implemented in this package might appear dirtier,
+yet, it is more effective.
+
 # Build
 
 `make all`
+
+# Notes
+
+I try to keep it this repository regularly up to date.
+But, I cannot test windows and macos version for each releases.
+If I had the resources i would setup a system to watch for tor website updates and
+keep this repository automatically updated with little human surveillance for breakages.
+
+Ideally, someone writes a module to keep the binary dependencies up to date upon
+starting of an application.
+
+The internal versionning of the tor engine builds follows the TBB versionning.
