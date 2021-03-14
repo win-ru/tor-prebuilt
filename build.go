@@ -53,9 +53,18 @@ func mmain() error {
 	}
 	pkgDir := filepath.Join("embedded", pkgName)
 	latest := filepath.Join("embedded", "tor_latest")
-	os.RemoveAll(latest)
+	// os.RemoveAll(latest)
 	os.MkdirAll(latest, os.ModePerm)
-	return copyRecursive(latest, pkgDir)
+	err = copyRecursive(latest, pkgDir)
+	if err != nil {
+		return err
+	}
+	ver := versionR.FindString(distDir)
+	if ver == "" {
+		return fmt.Errorf("version not found in package directory %q for target=%q", distDir, target)
+	}
+	ver = strings.Replace(ver, ".", "_", -1)
+	return fixPkgName(latest, ver)
 }
 
 func genBinData(distDir, target string) (string, error) {
@@ -359,6 +368,23 @@ func copyRecursive(dst, src string) error {
 		}
 		defer fo.Close()
 		_, err = io.Copy(fo, f)
+		return err
+	})
+}
+
+func fixPkgName(src, ver string) error {
+	return filepath.Walk(src, func(path string, info os.FileInfo, err error) error {
+		if info.IsDir() {
+			return nil
+		}
+		d, err := ioutil.ReadFile(path)
+		if err != nil {
+			return err
+		}
+		search := fmt.Sprintf("package tor_%v", ver)
+		replace := "package tor_latest"
+		d = bytes.Replace(d, []byte(search), []byte(replace), -1)
+		err = ioutil.WriteFile(path, d, os.ModePerm)
 		return err
 	})
 }
