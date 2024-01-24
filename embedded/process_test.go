@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/clementauger/tor-prebuilt/embedded"
+	"github.com/win-ru/tor-prebuilt/embedded"
 )
 
 func TestTor(t *testing.T) {

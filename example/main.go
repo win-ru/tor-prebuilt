@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/clementauger/tor-prebuilt/embedded"
 	"github.com/cretz/bine/tor"
+	"github.com/win-ru/tor-prebuilt/embedded"
 )
 
 func main() {

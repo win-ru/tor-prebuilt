@@ -15,8 +15,8 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/clementauger/tor-prebuilt/embedded"
 	"github.com/mholt/archiver"
+	"github.com/win-ru/tor-prebuilt/embedded"
 )
 
 func main() {
