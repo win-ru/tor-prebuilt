@@ -11,8 +11,8 @@ import (
 	"runtime"
 	"strings"
 
-	tor "github.com/win-ru/tor-prebuilt/embedded/tor_latest"
 	"github.com/cretz/bine/process"
+	tor "github.com/win-ru/tor-prebuilt/embedded/tor_latest"
 )
 
 func NewCreator() process.Creator {
